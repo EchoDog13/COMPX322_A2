@@ -15,5 +15,5 @@ while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 
 // Send JSON response
 header('Content-Type: application/json');
-echo json_encode($events);
+echo json_encode($commoditiesList);
 ?>

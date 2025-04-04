@@ -1,4 +1,5 @@
 let commodities = [];
+let widgets = [];
 document.addEventListener("DOMContentLoaded", getCommoditiesList);
 
 async function getCommoditiesList() {
@@ -48,8 +49,32 @@ function displayCommoditiesList() {
     );
 
     if (selectedCommodity) {
-      const newWidget = new Widget(selectedCommodity); // Assuming `Widget` is a class
-      newWidget.loadWidget();
+      if (widgets[selectedCommodity.id - 1] == undefined) {
+        const newWidget = new Widget(selectedCommodity);
+        widgets[newWidget.ID - 1] = newWidget;
+        newWidget.show();
+      }
     }
   });
+}
+
+/**
+ * Widget class - stores commidity information and has methods to show and hide the widget from the DOM
+ */
+class Widget {
+  constructor(selectedCommodity) {
+    this.code = selectedCommodity.code;
+    this.ID = selectedCommodity.id;
+    this.information = selectedCommodity.information;
+    this.cName = selectedCommodity.name;
+  }
+
+  show() {
+    console.log("Show Widget");
+    console.log(this.cName);
+  }
+
+  hide() {
+    console.log("Hide Widget");
+  }
 }

@@ -7,13 +7,13 @@ async function getCommoditiesList() {
     if (response.ok) {
       const data = await response.json();
       console.log(data);
-      commodities = data.map((commoditiy) => ({
-        id: commoditiy.id,
-        name: commoditiy.name,
-        information: commoditiy.information,
-        code: commoditiy.code,
+      commodities = data.map((commodity) => ({
+        id: commodity.id,
+        name: commodity.name,
+        information: commodity.information,
+        code: commodity.code,
       }));
-      displayCommodities();
+      displayCommoditiesList();
     } else {
       throw new Error("Failed to retrieve data");
     }
@@ -22,49 +22,34 @@ async function getCommoditiesList() {
   }
 }
 
-function displayCommodities() {
-  // Sort Commodities
+function displayCommoditiesList() {
+  // Sort commodities
   commodities.sort((a, b) => a.name.localeCompare(b.name));
 
-  select = document.getElementById("commodity-select");
+  const select = document.getElementById("commodity-select");
 
-  //Clear any existing options
+  // Clear any existing options
   select.innerHTML = "";
   select.innerHTML += "<option></option>";
 
-  //Add options to select drop dowm
-  commodities.forEach((commoditiy) => {
+  // Add options to select dropdown
+  commodities.forEach((commodity) => {
     const option = document.createElement("option");
-
-    option.value = commoditiy.id;
-    option.textContent = commoditiy.name;
-
+    option.value = commodity.id;
+    option.textContent = commodity.name;
     select.appendChild(option);
   });
-  select.addEventListener("change", (event)=>{
-        const selectedId = event.target.id;
-        const selectedCommoditiy = commodities.find(commoditiy => commoditiy.id == selectedId
-            if(selectedCommoditiy == true){
-                const newWidget = new widget(selectedCommoditiy);
-                newWidget.loadWidget();
-            }
-        )
+
+  // Add event listener
+  select.addEventListener("change", (event) => {
+    const selectedId = event.target.value; // Correct property to get selected value
+    const selectedCommodity = commodities.find(
+      (commodity) => commodity.id == selectedId
+    );
+
+    if (selectedCommodity) {
+      const newWidget = new Widget(selectedCommodity); // Assuming `Widget` is a class
+      newWidget.loadWidget();
+    }
   });
-}
-
-
-
-function widget(commoditiy) {
-
-
-
-
-    loadWidget(event){
-        
-    }
-    
-    hideWidget(){
-
-    }
-
 }

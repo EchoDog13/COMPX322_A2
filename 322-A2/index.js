@@ -64,17 +64,56 @@ function displayCommoditiesList() {
 class Widget {
   constructor(selectedCommodity) {
     this.code = selectedCommodity.code;
-    this.ID = selectedCommodity.id;
+    this.id = selectedCommodity.id;
     this.information = selectedCommodity.information;
     this.cName = selectedCommodity.name;
   }
 
+  //Add to DOM
+  //Show Name
+  //Add graph button
+  //remove graph button
   show() {
     console.log("Show Widget");
     console.log(this.cName);
+    const widgetsContainer = document.getElementById("widgets-container");
+
+    const widgetDiv = document.createElement("div");
+    var _h3 = document.createElement("h3");
+    var _removeButton = document.createElement("button");
+    var _showGraphButton = document.createElement("button");
+    var _hideGraphButton = document.createElement("button");
+
+    _h3.innerHTML = this.cName;
+    _removeButton.innerHTML = "Remove";
+    _removeButton.onclick = () => this.hide();
+
+    _showGraphButton.innerText = "Show Graph";
+    //_showGraphButton.onclick(); //DO SOMETHING
+
+    _hideGraphButton.innerText = "Hide Graph";
+    //_hideGraphButton.onclick(); //DO SOMETHING
+
+    widgetDiv.id = `widget-${this.id}`;
+    //Append elements to DIV
+    widgetDiv.append(_h3);
+    widgetDiv.append(_showGraphButton);
+    widgetDiv.append(_hideGraphButton);
+    widgetDiv.append(_removeButton);
+
+    //Append div to container
+    widgetsContainer.append(widgetDiv);
   }
 
+  //Remove from widget array
+  //Remove from DOM
   hide() {
-    console.log("Hide Widget");
+    const widgetDiv = document.getElementById(`widget-${this.id}`);
+    if (widgetDiv) {
+      widgetDiv.remove(); // Removes the div element from the DOM
+    }
+
+    // Optionally remove from the widgets array
+    widgets[this.id - 1] = undefined;
   }
 }

@@ -51,7 +51,7 @@ function displayCommoditiesList() {
     if (selectedCommodity) {
       if (widgets[selectedCommodity.id - 1] == undefined) {
         const newWidget = new Widget(selectedCommodity);
-        widgets[newWidget.ID - 1] = newWidget;
+        widgets[newWidget.id - 1] = newWidget;
         newWidget.show();
         generateKey();
       }
@@ -90,7 +90,7 @@ class Widget {
     _removeButton.onclick = () => this.hide();
 
     _showGraphButton.innerText = "Show Graph";
-    //_showGraphButton.onclick(); //DO SOMETHING
+    _showGraphButton.onclick = () => showGraph(this.code);
 
     _hideGraphButton.innerText = "Hide Graph";
     //_hideGraphButton.onclick(); //DO SOMETHING
@@ -118,6 +118,39 @@ class Widget {
     widgets[this.id - 1] = undefined;
   }
 }
+
+async function showGraph(code) {
+  const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
+  dataLocation = "query.json";
+
+  try {
+    const response = await fetch(dataLocation);
+
+    if (!response.ok) {
+      throw new Error("Network response failed");
+    }
+
+    const res = await response.json();
+    console.log("JSON response:", res);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+// Call the function
+showGraph();
+
+const data = {
+  //labels: ;
+  datasets: "query.json",
+};
+
+const config = {
+  type: "line",
+  data: data,
+};
+
+const chart = new Chart(document.getElementById("chart"), config);
 
 /**
  * Generate an API for testing to allow more than 25 requests per day

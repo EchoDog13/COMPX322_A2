@@ -53,6 +53,7 @@ function displayCommoditiesList() {
         const newWidget = new Widget(selectedCommodity);
         widgets[newWidget.ID - 1] = newWidget;
         newWidget.show();
+        generateKey();
       }
     }
   });
@@ -117,3 +118,22 @@ class Widget {
     widgets[this.id - 1] = undefined;
   }
 }
+
+/**
+ * Generate an API for testing to allow more than 25 requests per day
+ * @param {*} length
+ * @returns
+ */
+function generateKey(length = 16) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let key = "";
+
+  for (let i = 0; i < length; i++) {
+    key += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return key;
+}
+
+// Example usage:
+console.log(generateKey()); // Generates a key like "MIDP5HIWUE7ZTBG1"

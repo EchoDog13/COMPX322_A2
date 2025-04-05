@@ -93,7 +93,7 @@ class Widget {
     _showGraphButton.onclick = () => showGraph(this.code);
 
     _hideGraphButton.innerText = "Hide Graph";
-    //_hideGraphButton.onclick(); //DO SOMETHING
+    _hideGraphButton.onclick = () => hideGraph(this.code);
 
     widgetDiv.id = `widget-${this.id}`;
     //Append elements to DIV
@@ -119,22 +119,34 @@ class Widget {
   }
 }
 
-async function showGraph(code) {
+async function showGraph(code1, code2) {
   try {
-    const dataResponse = await loadGraphData(code); // Await the result of loadGraphData
-    console.log(dataResponse);
+    const dataResponse1 = await loadGraphData(code1); // Await the result of loadGraphData
+    const dataResponse2 = await loadGraphData(code2); // Await the result of loadGraphData
 
-    const dates = dataResponse.data.map((item) => item.date); // Extract dates
-    const values = dataResponse.data.map((item) => parseFloat(item.value)); // Extract values
+    console.log(dataResponse1);
+
+    const dates1 = dataResponse1.data.map((item) => item.date); // Extract dates
+    const values1 = dataResponse1.data.map((item) => parseFloat(item.value)); // Extract values
+
+    //const dates2 = dataResponse2.data.map((item) => item.date); // Extract dates
+    const values2 = dataResponse2.data.map((item) => parseFloat(item.value)); // Extract values
 
     const chartData = {
-      labels: dates, // X-axis labels
+      labels: dates1, // X-axis labels
       datasets: [
         {
-          label: "Commodity Prices", // Label for the dataset
-          data: values, // Y-axis data
+          label: dataResponse1.name, // Label for the dataset
+          data: values1, // Y-axis data
           borderColor: "rgba(75, 192, 192, 1)", // Line color
           backgroundColor: "rgba(75, 192, 192, 0.2)", // Fill color
+          borderWidth: 1, // Line width
+        },
+        {
+          label: dataResponse2.name, // Label for the dataset
+          data: values2, // Y-axis data
+          borderColor: "rgb(199, 112, 26)", // Line color
+          backgroundColor: "rgba(192, 176, 75, 0.2)", // Fill color
           borderWidth: 1, // Line width
         },
       ],
@@ -177,6 +189,8 @@ async function loadGraphData(code) {
     throw error; // Re-throw the error to handle it in showGraph
   }
 }
+
+function hideGraph() {}
 
 /**
  * Generate an API for testing to allow more than 25 requests per day

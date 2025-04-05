@@ -120,8 +120,49 @@ class Widget {
 }
 
 async function showGraph(code) {
-  const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
-  dataLocation = "query.json";
+  try {
+    const dataResponse = await loadGraphData(code); // Await the result of loadGraphData
+    console.log(dataResponse);
+
+    const dates = dataResponse.data.map((item) => item.date); // Extract dates
+    const values = dataResponse.data.map((item) => parseFloat(item.value)); // Extract values
+
+    const chartData = {
+      labels: dates, // X-axis labels
+      datasets: [
+        {
+          label: "Commodity Prices", // Label for the dataset
+          data: values, // Y-axis data
+          borderColor: "rgba(75, 192, 192, 1)", // Line color
+          backgroundColor: "rgba(75, 192, 192, 0.2)", // Fill color
+          borderWidth: 1, // Line width
+        },
+      ],
+    };
+
+    const config = {
+      type: "line", // Chart type
+      data: chartData,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            position: "top",
+          },
+        },
+      },
+    };
+
+    new Chart(document.getElementById("chart"), config); // Render the chart
+  } catch (error) {
+    console.error("Error loading graph data:", error);
+  }
+}
+
+async function loadGraphData(code) {
+  //const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
+  const dataLocation = "query.json";
 
   try {
     const response = await fetch(dataLocation);
@@ -129,28 +170,13 @@ async function showGraph(code) {
     if (!response.ok) {
       throw new Error("Network response failed");
     }
-
-    const res = await response.json();
-    console.log("JSON response:", res);
+    const res = await response.json(); // Parse the JSON response
+    return res; // Return the JSON object
   } catch (error) {
     console.error("Error fetching data:", error);
+    throw error; // Re-throw the error to handle it in showGraph
   }
 }
-
-// Call the function
-showGraph();
-
-const data = {
-  //labels: ;
-  datasets: "query.json",
-};
-
-const config = {
-  type: "line",
-  data: data,
-};
-
-const chart = new Chart(document.getElementById("chart"), config);
 
 /**
  * Generate an API for testing to allow more than 25 requests per day

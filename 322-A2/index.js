@@ -179,8 +179,8 @@ async function showGraph(code, label) {
 }
 
 async function loadGraphData(code) {
-  //const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
-  const dataLocation = "query.json";
+  const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
+  // const dataLocation = "query.json";
 
   try {
     const response = await fetch(dataLocation);

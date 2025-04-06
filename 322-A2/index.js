@@ -70,103 +70,109 @@ class Widget {
     this.cName = selectedCommodity.name;
   }
 
-  //Add to DOM
-  //Show Name
-  //Add graph button
-  //remove graph button
   show() {
     console.log("Show Widget");
     console.log(this.cName);
     const widgetsContainer = document.getElementById("widgets-container");
 
     const widgetDiv = document.createElement("div");
-    var _h3 = document.createElement("h3");
-    var _removeButton = document.createElement("button");
-    var _showGraphButton = document.createElement("button");
-    var _hideGraphButton = document.createElement("button");
+    const _h3 = document.createElement("h3");
+    const _removeButton = document.createElement("button");
+    const _showGraphButton = document.createElement("button");
+    const _hideGraphButton = document.createElement("button");
 
     _h3.innerHTML = this.cName;
     _removeButton.innerHTML = "Remove";
     _removeButton.onclick = () => this.hide();
 
     _showGraphButton.innerText = "Show Graph";
-    _showGraphButton.onclick = () => showGraph(this.code);
+    _showGraphButton.onclick = () => {
+      showGraph(this.code, this.cName);
+      _showGraphButton.style.display = "none"; // Hide "Show Graph" button
+      _hideGraphButton.style.display = "inline-block"; // Show "Hide Graph" button
+    };
 
     _hideGraphButton.innerText = "Hide Graph";
-    _hideGraphButton.onclick = () => hideGraph(this.code);
+    _hideGraphButton.style.display = "none"; // Initially hide "Hide Graph" button
+    _hideGraphButton.onclick = () => {
+      hideGraph(this.cName);
+      _hideGraphButton.style.display = "none"; // Hide "Hide Graph" button
+      _showGraphButton.style.display = "inline-block"; // Show "Show Graph" button
+    };
 
     widgetDiv.id = `widget-${this.id}`;
-    //Append elements to DIV
     widgetDiv.append(_h3);
     widgetDiv.append(_showGraphButton);
     widgetDiv.append(_hideGraphButton);
     widgetDiv.append(_removeButton);
 
-    //Append div to container
     widgetsContainer.append(widgetDiv);
   }
 
-  //Remove from widget array
-  //Remove from DOM
   hide() {
     const widgetDiv = document.getElementById(`widget-${this.id}`);
     if (widgetDiv) {
       widgetDiv.remove(); // Removes the div element from the DOM
     }
-
+    hideGraph(this.cName);
     // Optionally remove from the widgets array
     widgets[this.id - 1] = undefined;
   }
 }
 
-async function showGraph(code1, code2) {
+let chart;
+
+async function showGraph(code, label) {
   try {
-    const dataResponse1 = await loadGraphData(code1); // Await the result of loadGraphData
-    const dataResponse2 = await loadGraphData(code2); // Await the result of loadGraphData
+    const dataResponse = await loadGraphData(code); // Load graph data
+    console.log(dataResponse);
 
-    console.log(dataResponse1);
+    const dates = dataResponse.data.map((item) => item.date); // Extract dates
+    const values = dataResponse.data.map((item) => parseFloat(item.value)); // Extract values
 
-    const dates1 = dataResponse1.data.map((item) => item.date); // Extract dates
-    const values1 = dataResponse1.data.map((item) => parseFloat(item.value)); // Extract values
-
-    //const dates2 = dataResponse2.data.map((item) => item.date); // Extract dates
-    const values2 = dataResponse2.data.map((item) => parseFloat(item.value)); // Extract values
-
-    const chartData = {
-      labels: dates1, // X-axis labels
-      datasets: [
-        {
-          label: dataResponse1.name, // Label for the dataset
-          data: values1, // Y-axis data
-          borderColor: "rgba(75, 192, 192, 1)", // Line color
-          backgroundColor: "rgba(75, 192, 192, 0.2)", // Fill color
-          borderWidth: 1, // Line width
-        },
-        {
-          label: dataResponse2.name, // Label for the dataset
-          data: values2, // Y-axis data
-          borderColor: "rgb(199, 112, 26)", // Line color
-          backgroundColor: "rgba(192, 176, 75, 0.2)", // Fill color
-          borderWidth: 1, // Line width
-        },
-      ],
+    const newDataset = {
+      label: label, // Label for the dataset
+      data: values, // Y-axis data
+      borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+        Math.random() * 255
+      )}, ${Math.floor(Math.random() * 255)}, 1)`, // Random line color
+      backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
+        Math.random() * 255
+      )}, ${Math.floor(Math.random() * 255)}, 1)`, // Fill color
+      borderWidth: 1, // Line width
     };
 
-    const config = {
-      type: "line", // Chart type
-      data: chartData,
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: "top",
+    if (chart) {
+      // If the chart already exists, add the new dataset
+      chart.data.labels = dates; // Update labels (X-axis)
+      chart.data.datasets.push(newDataset); // Add the new dataset
+      chart.update(); // Update the chart
+    } else {
+      // If the chart doesn't exist, create a new one
+      const chartData = {
+        labels: dates, // X-axis labels
+        datasets: [newDataset], // Initial dataset
+      };
+
+      const config = {
+        type: "line", // Chart type
+        data: chartData,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top",
+            },
           },
         },
-      },
-    };
+      };
 
-    new Chart(document.getElementById("chart"), config); // Render the chart
+      chart = new Chart(document.getElementById("chart"), config); // Create the chart
+    }
+
+    // Ensure the chart is visible
+    document.getElementById("chart").style.display = "block";
   } catch (error) {
     console.error("Error loading graph data:", error);
   }
@@ -190,7 +196,37 @@ async function loadGraphData(code) {
   }
 }
 
-function hideGraph() {}
+function hideGraph(label) {
+  if (chart) {
+    // Find the index of the dataset with the specified label
+    const datasetIndex = chart.data.datasets.findIndex(
+      (dataset) => dataset.label === label
+    );
+
+    if (datasetIndex !== -1) {
+      // Remove the dataset from the datasets array
+      chart.data.datasets.splice(datasetIndex, 1);
+
+      // Update the chart to reflect the changes
+      chart.update();
+
+      if (isGraphEmpty()) {
+        document.getElementById("chart").style.display = "none"; // Hide the chart
+      }
+    } else {
+      console.warn(`Dataset with label "${label}" not found.`);
+    }
+  } else {
+    console.warn("No chart instance found.");
+  }
+}
+
+function isGraphEmpty() {
+  if (chart && chart.data.datasets.length === 0) {
+    return true; // The graph is empty
+  }
+  return false; // The graph has datasets
+}
 
 /**
  * Generate an API for testing to allow more than 25 requests per day

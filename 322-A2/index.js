@@ -69,23 +69,26 @@ class Widget {
     this.information = selectedCommodity.information;
     this.cName = selectedCommodity.name;
   }
-
+  // Show widgets
   show() {
     console.log("Show Widget");
     console.log(this.cName);
     const widgetsContainer = document.getElementById("widgets-container");
 
+    //Create widdget element
     const widgetDiv = document.createElement("div");
     const _h3 = document.createElement("h3");
     const _removeButton = document.createElement("button");
     const _showGraphButton = document.createElement("button");
     const _hideGraphButton = document.createElement("button");
 
+    //Add content to widget elements
     _h3.innerHTML = this.cName;
     _removeButton.innerHTML = "Remove";
     _removeButton.onclick = () => this.hide();
 
     _showGraphButton.innerText = "Show Graph";
+    //Update buttons based on graph state
     _showGraphButton.onclick = () => {
       showGraph(this.code, this.cName);
       _showGraphButton.style.display = "none"; // Hide "Show Graph" button
@@ -100,22 +103,25 @@ class Widget {
       _showGraphButton.style.display = "inline-block"; // Show "Show Graph" button
     };
 
+    //Append widget to widget
     widgetDiv.id = `widget-${this.id}`;
     widgetDiv.append(_h3);
     widgetDiv.append(_showGraphButton);
     widgetDiv.append(_hideGraphButton);
     widgetDiv.append(_removeButton);
 
+    //Append Widget to page (Widget container)
     widgetsContainer.append(widgetDiv);
   }
-
+  //Hide widget
   hide() {
+    //Find the widget
     const widgetDiv = document.getElementById(`widget-${this.id}`);
     if (widgetDiv) {
       widgetDiv.remove(); // Removes the div element from the DOM
     }
     hideGraph(this.cName);
-    // Optionally remove from the widgets array
+    // remove from the widgets array
     widgets[this.id - 1] = undefined;
   }
 }
@@ -180,7 +186,6 @@ async function showGraph(code, label) {
 
 async function loadGraphData(code) {
   const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
-  // const dataLocation = "query.json";
 
   try {
     const response = await fetch(dataLocation);

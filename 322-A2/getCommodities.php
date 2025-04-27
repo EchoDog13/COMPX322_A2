@@ -2,8 +2,8 @@
 
 include 'connectdb.php'; // Include the PDO connection
 
-// SQL query to get all events and thier id
-$sql = "SELECT * FROM commodities"; // SQL query to get all events
+// SQL query to get all commodities and all their other fields
+$sql = "SELECT * FROM commodities"; // 
 $result = $con->query($sql);
 
 $commoditiesList = []; // Store results in an array

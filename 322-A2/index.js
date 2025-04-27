@@ -2,6 +2,7 @@ let commodities = [];
 let widgets = [];
 document.addEventListener("DOMContentLoaded", getCommoditiesList);
 
+// Fetches commodities list via async function
 async function getCommoditiesList() {
   try {
     const response = await fetch("getCommodities.php");
@@ -14,6 +15,7 @@ async function getCommoditiesList() {
         information: commodity.information,
         code: commodity.code,
       }));
+      //once commidities are recieved, display list
       displayCommoditiesList();
     } else {
       throw new Error("Failed to retrieve data");
@@ -49,11 +51,11 @@ function displayCommoditiesList() {
     );
 
     if (selectedCommodity) {
+      //Check if widget already exists
       if (widgets[selectedCommodity.id - 1] == undefined) {
         const newWidget = new Widget(selectedCommodity);
         widgets[newWidget.id - 1] = newWidget;
         newWidget.show();
-        generateKey();
       }
     }
   });
@@ -184,8 +186,9 @@ async function showGraph(code, label) {
   }
 }
 
+// Query for grapha data
 async function loadGraphData(code) {
-  const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=MIDP5HIWUE7ZTBG1}`;
+  const dataLocation = `${"https://www.alphavantage.co/query?function="}${code}&interval=monthly&apikey=2ID8PYDH4M7CKKEL}`;
 
   try {
     const response = await fetch(dataLocation);
@@ -201,6 +204,7 @@ async function loadGraphData(code) {
   }
 }
 
+// Remove data from gra[h]
 function hideGraph(label) {
   if (chart) {
     // Find the index of the dataset with the specified label
@@ -215,6 +219,7 @@ function hideGraph(label) {
       // Update the chart to reflect the changes
       chart.update();
 
+      //Check if graph is empty and need to hide chart, or just remove data from graph
       if (isGraphEmpty()) {
         document.getElementById("chart").style.display = "none"; // Hide the chart
       }
@@ -226,28 +231,10 @@ function hideGraph(label) {
   }
 }
 
+//Check if graph is displaying any data
 function isGraphEmpty() {
   if (chart && chart.data.datasets.length === 0) {
     return true; // The graph is empty
   }
   return false; // The graph has datasets
 }
-
-/**
- * Generate an API for testing to allow more than 25 requests per day
- * @param {*} length
- * @returns
- */
-function generateKey(length = 16) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let key = "";
-
-  for (let i = 0; i < length; i++) {
-    key += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  return key;
-}
-
-// Example usage:
-console.log(generateKey()); // Generates a key like "MIDP5HIWUE7ZTBG1"
